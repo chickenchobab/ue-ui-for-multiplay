@@ -6,6 +6,17 @@
 #include "MenuWidget.h"
 #include "MainMenu.generated.h"
 
+USTRUCT()
+struct FServerData
+{
+	GENERATED_BODY()
+
+	FString Name;
+	FString HostUsername;
+	uint16 CurrentPlayers;
+	uint16 MaxPlayers;
+};
+
 /**
  * 
  */
@@ -16,25 +27,48 @@ UCLASS()
 class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
+
+public:
+	UMainMenu(const FObjectInitializer& ObjectInitializer);
+
+	void SetServerList(TArray<FServerData> Servers);
+
+	void SelectIndex(uint32 Index);
 	
 protected:
 	virtual bool Initialize() override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
+	UButton* QuitButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* HostMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
 	UButton* HostButton;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* JoinMenuButton;
+	UButton* CancelHostMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* QuitButton;
+	class UEditableTextBox* ServerHostName;
+	
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* JoinMenuButton;
+	
+	UPROPERTY(meta = (BindWidget))
+	UButton* JoinButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* CancelJoinMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* JoinButton;
+	class UPanelWidget* ServerList;
+
+	TSubclassOf<class UUserWidget> ServerRowClass;
+
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitcher;
@@ -43,23 +77,31 @@ private:
 	class UWidget* MainMenu;
 
 	UPROPERTY(meta = (BindWidget))
-	class UWidget* JoinMenu;
+	class UWidget* HostMenu;
 
 	UPROPERTY(meta = (BindWidget))
-	class UEditableTextBox* IPAddressEntry;
+	class UWidget* JoinMenu;
 
-	UFUNCTION()
-	void HostServer();
-
-	UFUNCTION()
-	void JoinServer();
 
 	UFUNCTION()
 	void QuitGameProgram();
 
 	UFUNCTION()
-	void OpenJoinMenu();
+	void OpenMainMenu();
 
 	UFUNCTION()
-	void OpenMainMenu();
+	void HostServer();
+
+	UFUNCTION()
+	void OpenHostMenu();
+
+	UFUNCTION()
+	void JoinServer();
+
+	UFUNCTION()
+	void OpenJoinMenu();
+
+	TOptional<uint32> SelectedIndex;
+
+	void UpdateChildren();
 };
